@@ -99,12 +99,12 @@ const mapApiDataToDiscussionStream = (apiData: any): DiscussionStream => {
         can_have_answer: false, // Assuming can_have_answer is not available in the sample data
     }));
 
-    const users: User[] = [...new Set(apiData.hits.map((hit: any) => ({
+    const users: User[] = [...(new Set(apiData.hits.map((hit: any) => ({
         id: hit.author,
         username: hit.author,
         name: hit.author, // Assuming name is the same as username
         avatar_template: '', // Assuming avatar_template is not available in the sample data
-    })))];
+    })))) as any];
 
     return { posts, topics, users };
 };
