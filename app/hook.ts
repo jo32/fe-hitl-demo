@@ -113,11 +113,11 @@ export const reindexData = (data: any): DiscussionStream => {
     return mapApiDataToDiscussionStream(data);
 };
 
-export const useData = (searchTerm: string, interval: number = 60000) => {
+export const useData = (searchTerm: string, interval: number = 60000, debounceDelay: number = 300) => {
     const [data, setData] = useState<DiscussionStream | null>(null);
     const [error, setError] = useState<Error | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
-    const hasFetchedOnce = useRef(false);
+    const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
     const fetchData = useCallback(async () => {
         setLoading(true);
@@ -139,14 +139,24 @@ export const useData = (searchTerm: string, interval: number = 60000) => {
     }, [searchTerm]);
 
     useEffect(() => {
-        if (searchTerm && !hasFetchedOnce.current) {
-            fetchData();
-            hasFetchedOnce.current = true;
-            const intervalId = setInterval(fetchData, interval);
+        if (searchTerm) {
+            if (debounceTimeout.current) {
+                clearTimeout(debounceTimeout.current);
+            }
 
-            return () => clearInterval(intervalId);
+            debounceTimeout.current = setTimeout(() => {
+                fetchData();
+                const intervalId = setInterval(fetchData, interval);
+                return () => clearInterval(intervalId);
+            }, debounceDelay);
         }
-    }, [searchTerm, fetchData, interval]);
+
+        return () => {
+            if (debounceTimeout.current) {
+                clearTimeout(debounceTimeout.current);
+            }
+        };
+    }, [searchTerm, fetchData, interval, debounceDelay]);
 
     const refresh = () => {
         setError(null);

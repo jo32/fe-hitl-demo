@@ -23,7 +23,7 @@ const SearchResults: React.FC = () => {
             value={searchTerm}
             onChange={handleSearchChange}
             placeholder="hello"
-            className="w-full p-2 pr-10 rounded"
+            className="w-full p-2 pr-10 rounded text-black"
           />
           <Search className="absolute right-3 top-2.5 text-gray-500" size={20} />
         </div>
