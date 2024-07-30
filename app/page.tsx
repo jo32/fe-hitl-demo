@@ -1,35 +1,16 @@
-import React from 'react';
-import { Search, Settings } from 'lucide-react';
+"use client";
 
-interface SearchResult {
-  title: string;
-  url: string;
-  points: number;
-  author: string;
-  age: string;
-  comments: number;
-}
+import React, { useState } from 'react';
+import { Search, Settings } from 'lucide-react';
+import useData, { DiscussionStream } from './hook'; // Adjust the import path as needed
 
 const SearchResults: React.FC = () => {
-  const results: SearchResult[] = [
-    {
-      title: "Bye Bye Mongo, Hello Postgres",
-      url: "https://www.theguardian.com/info/2018/nov/30/bye-bye-mongo-hello-postgres",
-      points: 1562,
-      author: "philliphaydon",
-      age: "6 years ago",
-      comments: 417
-    },
-    {
-      title: "Hello, GitHub",
-      url: "https://natfriedman.github.io/hello/",
-      points: 1498,
-      author: "rafaelc",
-      age: "5 years ago",
-      comments: 644
-    },
-    // ... more results can be added here
-  ];
+  const [searchTerm, setSearchTerm] = useState<string>('hello');
+  const { data, error, loading, refresh } = useData(searchTerm);
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  };
 
   return (
     <div className="bg-orange-500 min-h-screen font-sans">
@@ -39,6 +20,8 @@ const SearchResults: React.FC = () => {
         <div className="flex-grow relative">
           <input
             type="text"
+            value={searchTerm}
+            onChange={handleSearchChange}
             placeholder="hello"
             className="w-full p-2 pr-10 rounded"
           />
@@ -49,18 +32,20 @@ const SearchResults: React.FC = () => {
       
       <main className="bg-gray-100 p-4">
         <div className="mb-4 text-sm text-gray-600">
-          15,737 results (0.013 seconds)
+          {loading ? 'Loading...' : data ? `${data.topics.length} results found` : 'No results'}
         </div>
         
-        {results.map((result, index) => (
+        {error && <div className="text-red-500">Error: {error.message}</div>}
+
+        {data && data.topics.map((topic, index) => (
           <div key={index} className="mb-4">
             <h2 className="text-lg">
-              <a href={result.url} className="text-black hover:underline">
-                {result.title}
+              <a href={topic.slug} className="text-black hover:underline">
+                {topic.title}
               </a>
             </h2>
             <div className="text-sm text-gray-600">
-              {result.points} points | {result.author} | {result.age} | {result.comments} comments
+              {topic.liked} points | {new Date(topic.created_at).toLocaleDateString()} | {topic.reply_count} comments
             </div>
           </div>
         ))}
