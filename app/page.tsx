@@ -1,5 +1,4 @@
 import React from 'react';
-import { Search, Settings } from 'lucide-react';
 
 interface SearchResult {
   title: string;
@@ -42,9 +41,9 @@ const SearchResults: React.FC = () => {
             placeholder="hello"
             className="w-full p-2 pr-10 rounded"
           />
-          <Search className="absolute right-3 top-2.5 text-gray-500" size={20} />
+          <div className="absolute right-3 top-2.5 text-gray-500 h-20 w-20"></div>
         </div>
-        <Settings className="text-white ml-4" size={24} />
+        <div className="text-white ml-4 h-20 w-20">Search</div>
       </header>
       
       <main className="bg-gray-100 p-4">
